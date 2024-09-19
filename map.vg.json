@@ -18,7 +18,7 @@
       "lookup": "properties.ste_iso3166_code",
       "from": {
         "data": {
-          "url": "cleaned.csv"
+          "url": "https://raw.githubusercontent.com/Commanchae/fit3179-hw9/refs/heads/main/cleaned.csv"
         },
         "key": "state",
         "fields": [
