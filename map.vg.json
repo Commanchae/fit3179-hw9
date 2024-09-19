@@ -1,0 +1,76 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": "International Migration in Australia",
+  "width": 800,
+  "height": 400,
+  "projection": {
+    "type": "mercator"
+  },
+  "data": {
+    "url": "australia-states.topojson.json",
+    "format": {
+      "type": "topojson",
+      "feature": "georef-australia-state@public"
+    }
+  },
+  "transform": [
+    {
+      "lookup": "properties.ste_iso3166_code",
+      "from": {
+        "data": {
+          "url": "cleaned.csv"
+        },
+        "key": "state",
+        "fields": [
+          "year",
+          "population"
+        ]
+      }
+    },
+    {
+      "filter": "datum.year == 2022"
+    }
+  ],
+  "layer": [
+    {
+      "mark": {
+        "type": "geoshape"
+      },
+      "encoding": {
+        "tooltip": [
+          {
+            "field": "population",
+            "type": "quantitative",
+            "title": "Country"
+          }
+        ]
+      }
+    },
+    {
+      "mark": {
+        "type": "circle"
+      },
+      "encoding": {
+        "longitude": {
+          "field": "properties.geo_point_2d.lon",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "properties.geo_point_2d.lat",
+          "type": "quantitative"
+        },
+        "size": {
+          "field": "population",
+          "type": "quantitative",
+          "title": "Magnitude (Richter scale)"
+        },
+        "color": {
+          "field": "netflow",
+          "type": "quantitative",
+          "title": "Depth in km",
+          "scale": {"scheme": "reds"}
+        }
+      }
+    }
+  ]
+}
