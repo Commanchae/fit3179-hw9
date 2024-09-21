@@ -1,13 +1,16 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-  "title": "International Migration in Australia",
-  "width": 800,
+  "title": {
+    "text":"International Migration into Australia",
+    "subtitle": "Net Flow of International Migrants per 10,000 population"
+  },
+  "width": 500,
   "height": 400,
   "projection": {
     "type": "mercator"
   },
   "data": {
-    "url": "australia-states.topojson.json",
+    "url": "2australia-states.topojson.json",
     "format": {
       "type": "topojson",
       "feature": "georef-australia-state@public"
@@ -18,18 +21,20 @@
       "lookup": "properties.ste_iso3166_code",
       "from": {
         "data": {
-          "url": "https://raw.githubusercontent.com/Commanchae/fit3179-hw9/refs/heads/main/cleaned.csv"
+          "url": "cleaned.csv"
         },
         "key": "state",
         "fields": [
           "year",
-          "population"
+          "population",
+          "netflow"
         ]
       }
     },
     {
       "filter": "datum.year == 2022"
-    }
+    },
+    {"calculate": "datum.netflow/datum.population * 10000", "as": "normalized_netflow"}
   ],
   "layer": [
     {
@@ -37,39 +42,60 @@
         "type": "geoshape"
       },
       "encoding": {
+        "color":{
+          "field":"normalized_netflow",
+          "type":"quantitative",
+          "scale":{
+            "scheme":"reds"
+          },
+          "legend": {
+            "title": "Net Flow of International Migrants",
+            "rowPadding":4
+          }
+        },
         "tooltip": [
           {
-            "field": "population",
+            "field": "properties.ste_name[0]",
+            "type": "nominal",
+            "title": "State"
+          },
+          {
+            "field": "normalized_netflow",
             "type": "quantitative",
-            "title": "Country"
+            "title": "Net Flow of Migrants (per 10,000 population)",
+            "format": ".3"
           }
         ]
       }
     },
     {
-      "mark": {
-        "type": "circle"
+      "mark":{
+        "type":"text"
       },
-      "encoding": {
-        "longitude": {
-          "field": "properties.geo_point_2d.lon",
-          "type": "quantitative"
-        },
+      "encoding":{
+        "longitude": {"field": "properties.geo_point_2d.lon",
+      "type": "quantitative"},
         "latitude": {
-          "field": "properties.geo_point_2d.lat",
+          "field":"properties.geo_point_2d.lat",
           "type": "quantitative"
         },
-        "size": {
-          "field": "population",
-          "type": "quantitative",
-          "title": "Magnitude (Richter scale)"
+        "text": {
+          "field": "properties.ste_iso3166_code",
+          "type": "nominal"
         },
-        "color": {
-          "field": "netflow",
-          "type": "quantitative",
-          "title": "Depth in km",
-          "scale": {"scheme": "reds"}
-        }
+        "tooltip": [
+          {
+            "field": "properties.ste_name[0]",
+            "type": "nominal",
+            "title": "State"
+          },
+          {
+            "field": "normalized_netflow",
+            "type": "quantitative",
+            "title": "Net Flow of Migrants (per 10,000 population)",
+            "format": ".3"
+          }
+        ]
       }
     }
   ]
